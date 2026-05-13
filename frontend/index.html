@@ -113,7 +113,7 @@
     .animate-glow-blink { animation: glow-blink 1.5s ease-in-out infinite; }
   </style>
 </head>
-<body class="bg-surface-container-low text-on-surface font-body-md h-screen overflow-hidden flex antialiased">
+<body class="bg-surface-container-low text-on-surface font-body-md min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row antialiased">
   <!-- Desktop Sidebar Navigation -->
   <aside class="w-64 bg-primary text-on-primary h-full flex-col hidden md:flex shadow-xl z-20">
     <div class="p-lg flex flex-col gap-base border-b border-surface-tint border-opacity-20">
@@ -140,7 +140,7 @@
   </aside>
 
   <!-- Main Content Area -->
-  <main class="flex-1 h-full overflow-y-auto bg-surface-container-low flex flex-col relative pb-24 md:pb-0">
+  <main class="flex-1 w-full md:h-full md:overflow-y-auto bg-surface-container-low flex flex-col relative pb-24 md:pb-0">
     <!-- Top App Bar (Mobile Only) -->
     <header class="md:hidden flex justify-between items-center px-md py-sm w-full bg-surface-container-lowest sticky top-0 z-10 shadow-sm">
       <h1 class="font-display-lg-mobile text-display-lg-mobile text-primary">Todarokiii</h1>
@@ -225,7 +225,7 @@
               <div>
                   <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 ml-1">Priority</label>
                   <div class="relative">
-                      <select id="edit-priority" class="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 pl-4 pr-10 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm appearance-none cursor-pointer">
+                      <select id="edit-priority" class="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 pl-4 pr-10 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm appearance-none !bg-none cursor-pointer">
                           <option value="low">Low</option>
                           <option value="medium" selected>Medium</option>
                           <option value="high">High</option>
