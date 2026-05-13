@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Todarokiii - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#ae2f34",
+                        "surface-container-low": "#f9f1ff",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1d1a24",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#caa900",
+                        "surface-tint": "#732ee4",
+                        "surface-container-highest": "#e8dfee",
+                        "surface-variant": "#e8dfee",
+                        "on-secondary-container": "#6d0010",
+                        "on-tertiary-fixed-variant": "#554500",
+                        "on-background": "#1d1a24",
+                        "on-secondary-fixed-variant": "#8c1520",
+                        "secondary-fixed": "#ffdad8",
+                        "primary-container": "#7c3aed",
+                        "on-secondary": "#ffffff",
+                        "primary": "#630ed4",
+                        "surface-container": "#f3ebfa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "on-primary-container": "#ede0ff",
+                        "on-secondary-fixed": "#410006",
+                        "secondary-fixed-dim": "#ffb3b0",
+                        "surface-dim": "#dfd7e6",
+                        "inverse-primary": "#d2bbff",
+                        "tertiary": "#705d00",
+                        "primary-fixed-dim": "#d2bbff",
+                        "surface-container-high": "#ede5f4",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "outline": "#7b7487",
+                        "inverse-surface": "#332f39",
+                        "background": "#fef7ff",
+                        "tertiary-fixed": "#ffe173",
+                        "on-surface-variant": "#4a4455",
+                        "outline-variant": "#ccc3d8",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#eaddff",
+                        "surface": "#fef7ff",
+                        "tertiary-fixed-dim": "#e8c426",
+                        "secondary-container": "#ff6b6b",
+                        "inverse-on-surface": "#f6eefc",
+                        "on-tertiary-container": "#4c3e00",
+                        "on-tertiary-fixed": "#221b00",
+                        "surface-bright": "#fef7ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#25005a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "32px",
+                        "xl": "48px",
+                        "sm": "12px",
+                        "md": "20px",
+                        "container-margin": "20px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Geist", "sans-serif"],
+                        "label-sm": ["Geist", "sans-serif"],
+                        "headline-lg": ["Geist", "sans-serif"],
+                        "body-md": ["Geist", "sans-serif"],
+                        "label-lg": ["Geist", "sans-serif"],
+                        "headline-md": ["Geist", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-lg": ["14px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+</script>
+<style>
+    body { font-family: 'Geist', sans-serif; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+<!-- Mobile Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:hidden z-50 flex justify-around items-center px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+    <a class="flex flex-col items-center gap-1 p-2 text-primary transition-colors" href="#">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task</span>
+        <span class="text-[10px] font-medium">Tasks</span>
+    </a>
+    <div class="-mt-8 relative z-10">
+        <button id="mobile-new-task-btn" class="w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg hover:bg-surface-tint transition-colors border-4 border-surface">
+            <span class="material-symbols-outlined">add</span>
+        </button>
+    </div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col w-full min-h-screen pb-20 md:pb-0 transition-all duration-300">
+    <!-- TopAppBar Component -->
+    <header class="bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-30 border-b border-outline-variant/30 px-md py-3 w-full">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 min-w-[40px] rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                </div>
+                <div>
+                    <h1 class="font-headline-md text-headline-md font-bold text-primary leading-tight">Todarokiii</h1>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant leading-tight hidden sm:block">Effortless Focus</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button id="header-new-task-btn" class="bg-primary text-on-primary rounded-full py-2.5 px-5 flex items-center justify-center gap-2 hover:bg-surface-tint transition-colors shadow-sm font-label-lg">
+                    <span class="material-symbols-outlined text-[20px]">add</span>
+                    <span class="hidden sm:block">New Task</span>
+                </button>
+                <div class="hidden sm:flex w-10 h-10 min-w-[40px] rounded-full overflow-hidden border border-outline-variant bg-surface-variant items-center justify-center font-bold text-primary">
+                    TF
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Canvas -->
+    <div class="flex-1 p-md md:p-lg lg:py-xl max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-lg lg:gap-xl relative">
+        <!-- Center Column: Welcome & Task List (8 cols on lg) -->
+        <div class="lg:col-span-8 flex flex-col gap-lg">
+            
+            <!-- Welcome Section -->
+            <section class="mb-sm">
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Good Morning <span class="inline-block text-tertiary-container ml-2">⛅</span></h2>
+                <p class="font-body-lg text-body-lg text-on-surface-variant" id="task-count-msg">You have <strong class="text-primary font-semibold">0 task</strong> to complete today</p>
+            </section>
+
+            <!-- Filters -->
+            <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
+                <button class="flex flex-col items-center gap-2 group transition-all" id="filter-all">
+                    <div id="filter-all-icon" class="w-14 h-14 rounded-full border-2 border-primary bg-primary/10 flex items-center justify-center transition-colors">
+                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">all_inbox</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-semibold text-primary" id="filter-all-text">All</span>
+                </button>
+                <button class="flex flex-col items-center gap-2 group transition-all" id="filter-pending">
+                    <div id="filter-pending-icon" class="w-14 h-14 rounded-full border-2 border-secondary-container bg-surface-container-lowest flex items-center justify-center hover:bg-secondary-container/10 transition-colors">
+                        <span class="material-symbols-outlined text-secondary-container" style="font-variation-settings: 'FILL' 1;">format_list_bulleted</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Pending</span>
+                </button>
+                <button class="flex flex-col items-center gap-2 group transition-all" id="filter-completed">
+                    <div id="filter-completed-icon" class="w-14 h-14 rounded-full border-2 border-green-500 bg-surface-container-lowest flex items-center justify-center hover:bg-green-500/10 transition-colors">
+                        <span class="material-symbols-outlined text-green-500" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Done</span>
+                </button>
+            </div>
+
+            <!-- Task List Section -->
+            <section class="flex-1 flex flex-col">
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-md">Your tasks</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-md" id="task-list">
+                    <!-- Tasks injected via JS -->
+                    <div class="col-span-full py-8 text-center" id="empty-msg">
+                        <p class="font-body-md text-on-surface-variant">No tasks yet. Add one!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Column: Task Creation Panel (4 cols on lg) -->
+        <div class="lg:col-span-4 flex flex-col gap-lg z-20" id="edit-modal-overlay">
+            <!-- New Task Panel (Persistent right pane on desktop, or modal on mobile) -->
+            <div class="bg-surface-container-lowest lg:bg-surface-container-high rounded-[2rem] p-md flex flex-col h-full lg:min-h-[600px] border border-outline-variant shadow-lg lg:shadow-none fixed lg:static inset-x-0 bottom-0 z-50 transform translate-y-full lg:translate-y-0 transition-transform duration-300 max-h-[90vh] overflow-y-auto" id="edit-modal">
+                <div class="flex items-center justify-between mb-lg">
+                    <button class="text-primary font-label-lg text-label-lg hover:underline lg:invisible" id="edit-cancel-btn">Cancel</button>
+                    <h3 class="font-headline-md text-headline-md text-on-surface" id="edit-modal-title">New Task</h3>
+                    <button type="button" class="text-primary font-label-lg text-label-lg hover:underline font-semibold" id="edit-clear-btn">Clear</button>
+                </div>
+                
+                <form class="flex flex-col gap-md flex-1" id="edit-task-form">
+                    <input type="hidden" id="edit-task-id">
+                    <!-- Title -->
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 ml-1">Title</label>
+                        <input id="edit-title" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl py-3 px-4 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm placeholder:text-outline transition-all" placeholder="Your new task title" type="text" required/>
+                    </div>
+                    <!-- Description -->
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 ml-1">Description</label>
+                        <textarea id="edit-desc" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl py-3 px-4 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm placeholder:text-outline transition-all resize-none" placeholder="Your new task description" rows="3"></textarea>
+                    </div>
+                    <!-- Date & Priority Row -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 ml-1">Due Date</label>
+                            <div class="relative">
+                                <input id="edit-due" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl py-3 px-4 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" type="date"/>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 ml-1">Priority</label>
+                            <div class="relative">
+                                <select id="edit-priority" class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl py-3 pl-4 pr-10 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm appearance-none cursor-pointer">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p id="edit-error" class="text-error font-body-md hidden"></p>
+
+                    <div class="mt-auto pt-md">
+                        <button type="submit" id="edit-save-btn" class="w-full bg-primary text-on-primary font-label-lg text-label-lg py-4 rounded-xl shadow-md hover:bg-surface-tint transition-colors">
+                            Save Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Mobile Overlay Background -->
+            <div id="mobile-overlay-bg" class="fixed inset-0 bg-black/40 z-40 lg:hidden hidden opacity-0 transition-opacity"></div>
+        </div>
+    </div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body></html>
