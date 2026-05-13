@@ -29,13 +29,18 @@ function renderTasks(tasks, filter) {
     filtered = tasks.filter(t => t.status === 'completed');
   }
 
-  // Sort: pending first, completed last. Within each group, sort by due date (earliest first, no-date last).
+  // Sort: pending first, completed last. Within pending, sort by priority (high > medium > low), then by due date.
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
   filtered = [...filtered].sort((a, b) => {
     // 1. Status: pending before completed
     if (a.status !== b.status) {
       return a.status === 'pending' ? -1 : 1;
     }
-    // 2. Due date: tasks with dates before tasks without, then earliest first
+    // 2. Priority: high first, then medium, then low
+    const aPrio = priorityOrder[a.priority] ?? 1;
+    const bPrio = priorityOrder[b.priority] ?? 1;
+    if (aPrio !== bPrio) return aPrio - bPrio;
+    // 3. Due date: tasks with dates before tasks without, then earliest first
     const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
     const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
     return aDate - bDate;
@@ -86,7 +91,17 @@ function renderTask(task) {
   if (task.due_date) {
     dueDateHtml = `
       <span class="inline-flex items-center mt-1 ${overdue ? 'text-error font-medium' : 'text-on-surface-variant'} font-label-sm text-label-sm">
+          <span class="material-symbols-outlined text-[12px] mr-0.5">event</span>
           ${overdue ? 'Overdue: ' : ''}${formatDate(task.due_date)}
+      </span>
+    `;
+  }
+
+  let createdAtHtml = '';
+  if (task.created_at) {
+    createdAtHtml = `
+      <span class="inline-flex items-center mt-0.5 text-on-surface-variant/60 font-label-sm text-[11px]">
+          Created ${formatDate(task.created_at)}
       </span>
     `;
   }
@@ -104,7 +119,10 @@ function renderTask(task) {
     <div class="flex-1 min-w-0 flex flex-col justify-center">
         <p class="font-body-md text-body-md text-on-surface truncate ${titleClass}">${escapeHtml(task.title)}</p>
         ${descHtml}
-        ${dueDateHtml}
+        <div class="flex flex-wrap items-center gap-x-3">
+          ${dueDateHtml}
+          ${createdAtHtml}
+        </div>
     </div>
     
     <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
