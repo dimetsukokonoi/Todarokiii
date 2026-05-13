@@ -21,7 +21,7 @@ function formatDate(dateStr) {
   });
 }
 
-function renderTasks(tasks, filter) {
+function renderTasks(tasks, filter, sortCriteria = 'priority', sortDirection = 'desc') {
   let filtered = tasks;
   if (filter === 'pending') {
     filtered = tasks.filter(t => t.status === 'pending');
@@ -29,21 +29,44 @@ function renderTasks(tasks, filter) {
     filtered = tasks.filter(t => t.status === 'completed');
   }
 
-  // Sort: pending first, completed last. Within pending, sort by priority (high > medium > low), then by due date.
+  // Dynamic sort: status first (pending before completed), then user-chosen criteria
   const priorityOrder = { high: 0, medium: 1, low: 2 };
+  const dir = sortDirection === 'asc' ? 1 : -1;
+
   filtered = [...filtered].sort((a, b) => {
-    // 1. Status: pending before completed
+    // 1. Status: pending before completed (always)
     if (a.status !== b.status) {
       return a.status === 'pending' ? -1 : 1;
     }
-    // 2. Priority: high first, then medium, then low
-    const aPrio = priorityOrder[a.priority] ?? 1;
-    const bPrio = priorityOrder[b.priority] ?? 1;
-    if (aPrio !== bPrio) return aPrio - bPrio;
-    // 3. Due date: tasks with dates before tasks without, then earliest first
-    const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-    const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
-    return aDate - bDate;
+
+    // 2. User-selected criteria
+    if (sortCriteria === 'priority') {
+      const aPrio = priorityOrder[a.priority] ?? 1;
+      const bPrio = priorityOrder[b.priority] ?? 1;
+      if (aPrio !== bPrio) return (aPrio - bPrio) * dir;
+      // Tiebreak: due date ascending
+      const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+      const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+      return aDate - bDate;
+    }
+
+    if (sortCriteria === 'deadline') {
+      const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+      const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+      if (aDate !== bDate) return (aDate - bDate) * dir;
+      // Tiebreak: priority high first
+      const aPrio = priorityOrder[a.priority] ?? 1;
+      const bPrio = priorityOrder[b.priority] ?? 1;
+      return aPrio - bPrio;
+    }
+
+    if (sortCriteria === 'created') {
+      const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return (aCreated - bCreated) * dir;
+    }
+
+    return 0;
   });
 
   taskListEl.innerHTML = '';

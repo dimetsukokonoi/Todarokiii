@@ -1,5 +1,7 @@
 let allTasks = [];
 let currentFilter = 'all';
+let currentSortCriteria = 'priority';
+let currentSortDirection = 'desc';
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -8,16 +10,21 @@ async function init() {
   bindFilterEvents();
   bindTaskListEvents();
   bindModalEvents();
+  bindSortEvents();
 }
 
 async function loadTasks() {
   try {
     allTasks = await getTasks();
-    if (window.renderTasks) {
-      window.renderTasks(allTasks, currentFilter);
-    }
+    reRender();
   } catch (err) {
     console.error('Failed to load tasks:', err);
+  }
+}
+
+function reRender() {
+  if (window.renderTasks) {
+    window.renderTasks(allTasks, currentFilter, currentSortCriteria, currentSortDirection);
   }
 }
 
@@ -46,19 +53,38 @@ function bindFilterEvents() {
   document.getElementById('filter-all').addEventListener('click', () => {
     currentFilter = 'all';
     updateFilterStyles('all');
-    window.renderTasks(allTasks, currentFilter);
+    reRender();
   });
 
   document.getElementById('filter-pending').addEventListener('click', () => {
     currentFilter = 'pending';
     updateFilterStyles('pending');
-    window.renderTasks(allTasks, currentFilter);
+    reRender();
   });
 
   document.getElementById('filter-completed').addEventListener('click', () => {
     currentFilter = 'completed';
     updateFilterStyles('completed');
-    window.renderTasks(allTasks, currentFilter);
+    reRender();
+  });
+}
+
+function bindSortEvents() {
+  const sortCriteriaEl = document.getElementById('sort-criteria');
+  const sortDirBtn = document.getElementById('sort-direction-btn');
+  const sortDirIcon = document.getElementById('sort-direction-icon');
+  const sortDirLabel = document.getElementById('sort-direction-label');
+
+  sortCriteriaEl.addEventListener('change', () => {
+    currentSortCriteria = sortCriteriaEl.value;
+    reRender();
+  });
+
+  sortDirBtn.addEventListener('click', () => {
+    currentSortDirection = currentSortDirection === 'desc' ? 'asc' : 'desc';
+    sortDirIcon.textContent = currentSortDirection === 'desc' ? 'arrow_downward' : 'arrow_upward';
+    sortDirLabel.textContent = currentSortDirection === 'desc' ? 'Desc' : 'Asc';
+    reRender();
   });
 }
 
