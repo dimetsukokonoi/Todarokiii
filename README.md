@@ -31,7 +31,7 @@ A minimalist, premium task manager built as a full-stack web application. Create
 - **Filter bar** — Toggle between All, Pending, and Completed views
 - **Due date with overdue highlighting** — Overdue tasks are flagged in red
 - **Priority levels** — Low (green), Medium (yellow), High (red) with colored indicators
-- **Sort by priority** — Tasks are automatically sorted High → Medium → Low
+- **Dynamic Sorting** — Default sorting by Deadline (Ascending). Users can dynamically sort tasks by Priority, Deadline, or Creation Date in Ascending or Descending order.
 - **Backend unit tests** — Written with `pytest` and FastAPI `TestClient`
 - **Deployed** — Live on Vercel at the link above
 - **Mobile-responsive UI** — Optimised for both desktop and mobile screens
