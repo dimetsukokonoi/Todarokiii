@@ -65,9 +65,9 @@ function renderTasks(tasks, filter) {
 
 function getPriorityIcon(priority) {
   switch(priority) {
-    case 'high': return { icon: 'priority_high', colorClass: 'text-error', bgClass: 'bg-error-container' };
-    case 'medium': return { icon: 'bolt', colorClass: 'text-tertiary', bgClass: 'bg-tertiary-container' };
-    case 'low': return { icon: 'arrow_downward', colorClass: 'text-on-surface-variant', bgClass: 'bg-surface-container' };
+    case 'high': return { icon: 'priority_high', colorClass: 'text-red-500 animate-glow-blink', bgClass: 'bg-red-500/10' };
+    case 'medium': return { icon: 'bolt', colorClass: 'text-yellow-500 animate-glow-blink', bgClass: 'bg-yellow-500/10' };
+    case 'low': return { icon: 'arrow_downward', colorClass: 'text-green-500 animate-glow-blink', bgClass: 'bg-green-500/10' };
     default: return { icon: 'task_alt', colorClass: 'text-on-surface-variant', bgClass: 'bg-surface-container' };
   }
 }
