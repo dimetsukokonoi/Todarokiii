@@ -1,6 +1,6 @@
 let allTasks = [];
 let currentFilter = 'all';
-let currentSortCriteria = 'priority';
+let currentSortCriteria = 'deadline';
 let currentSortDirection = 'desc';
 
 document.addEventListener('DOMContentLoaded', init);

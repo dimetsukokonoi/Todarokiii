@@ -51,9 +51,17 @@ function renderTasks(tasks, filter, sortCriteria = 'priority', sortDirection = '
     }
 
     if (sortCriteria === 'deadline') {
-      const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-      const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+      const hasDateA = !!a.due_date;
+      const hasDateB = !!b.due_date;
+      
+      // Always put tasks with NO deadline at the bottom of the list
+      if (hasDateA && !hasDateB) return -1;
+      if (!hasDateA && hasDateB) return 1;
+
+      const aDate = a.due_date ? new Date(a.due_date).getTime() : 0;
+      const bDate = b.due_date ? new Date(b.due_date).getTime() : 0;
       if (aDate !== bDate) return (aDate - bDate) * dir;
+      
       // Tiebreak: priority high first
       const aPrio = priorityOrder[a.priority] ?? 1;
       const bPrio = priorityOrder[b.priority] ?? 1;
