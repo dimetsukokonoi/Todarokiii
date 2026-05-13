@@ -89,8 +89,8 @@ task-flow/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/task-flow.git
-cd task-flow
+https://github.com/dimetsukokonoi/Todarokiii.git
+cd Todarokiii
 ```
 
 ### 2. Set up the database (Supabase)
