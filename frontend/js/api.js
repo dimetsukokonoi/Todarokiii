@@ -1,4 +1,5 @@
-const BASE_URL = 'http://localhost:8000/api';
+const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const BASE_URL = isLocal ? 'http://localhost:8000/api' : '/api';
 
 async function handleResponse(response) {
   const data = await response.json();

@@ -4,7 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "./taskflow.db")
+default_db = "./taskflow.db"
+if os.getenv("VERCEL"):
+  default_db = "/tmp/taskflow.db"
+
+DATABASE_URL = os.getenv("DATABASE_URL", default_db)
 
 
 def get_connection():
