@@ -1,7 +1,8 @@
 const taskListEl = document.getElementById('task-list');
 const emptyMsgEl = document.getElementById('empty-msg');
 const editErrorEl = document.getElementById('edit-error');
-const modalContent = document.getElementById('edit-modal');
+const modalWrapper = document.getElementById('edit-modal');
+const modalContentEl = document.getElementById('edit-modal-content');
 const mobileOverlayBg = document.getElementById('mobile-overlay-bg');
 const taskCountMsg = document.getElementById('task-count-msg');
 
@@ -28,6 +29,18 @@ function renderTasks(tasks, filter) {
     filtered = tasks.filter(t => t.status === 'completed');
   }
 
+  // Sort: pending first, completed last. Within each group, sort by due date (earliest first, no-date last).
+  filtered = [...filtered].sort((a, b) => {
+    // 1. Status: pending before completed
+    if (a.status !== b.status) {
+      return a.status === 'pending' ? -1 : 1;
+    }
+    // 2. Due date: tasks with dates before tasks without, then earliest first
+    const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+    const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+    return aDate - bDate;
+  });
+
   taskListEl.innerHTML = '';
 
   // Update greeting count
@@ -50,12 +63,12 @@ function renderTasks(tasks, filter) {
   });
 }
 
-function getPriorityColor(priority) {
+function getPriorityIcon(priority) {
   switch(priority) {
-    case 'high': return 'bg-secondary'; // Red/High
-    case 'medium': return 'bg-tertiary-container'; // Yellow/Medium
-    case 'low': return 'bg-surface-variant border-2 border-outline'; // Subtle/Low
-    default: return 'bg-primary';
+    case 'high': return { icon: 'priority_high', colorClass: 'text-error', bgClass: 'bg-error-container' };
+    case 'medium': return { icon: 'bolt', colorClass: 'text-tertiary', bgClass: 'bg-tertiary-container' };
+    case 'low': return { icon: 'arrow_downward', colorClass: 'text-on-surface-variant', bgClass: 'bg-surface-container' };
+    default: return { icon: 'task_alt', colorClass: 'text-on-surface-variant', bgClass: 'bg-surface-container' };
   }
 }
 
@@ -64,62 +77,48 @@ function renderTask(task) {
   const isCompleted = task.status === 'completed';
   const overdue = !isCompleted && isOverdue(task.due_date);
   
-  card.className = `bg-surface-container-lowest rounded-[1.5rem] p-md border ${overdue ? 'border-secondary' : 'border-outline-variant'} shadow-sm relative overflow-hidden hover:shadow-md transition-shadow group flex flex-col justify-between`;
+  card.className = `bg-surface-container-lowest rounded-2xl p-sm flex items-center gap-md shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-surface-container-high group hover:shadow-md transition-shadow relative`;
   card.dataset.id = task.id;
 
-  const priorityStyle = getPriorityColor(task.priority);
-
-  // Background Texture
-  const bgDecoration = isCompleted 
-    ? `<div class="absolute right-0 top-0 w-1/2 h-full opacity-20 bg-gradient-to-br from-transparent to-green-500 rounded-bl-full pointer-events-none transition-all"></div>`
-    : `<div class="absolute right-0 top-0 w-1/2 h-full opacity-10 bg-gradient-to-br from-transparent to-primary rounded-bl-full pointer-events-none transition-all group-hover:opacity-20"></div>`;
+  const priorityData = getPriorityIcon(task.priority);
 
   let dueDateHtml = '';
   if (task.due_date) {
     dueDateHtml = `
-      <span class="inline-flex items-center ${overdue ? 'bg-secondary/10 text-secondary' : 'bg-surface-container-high text-on-surface-variant'} px-3 py-1 rounded-full font-label-sm text-label-sm">
+      <span class="inline-flex items-center mt-1 ${overdue ? 'text-error font-medium' : 'text-on-surface-variant'} font-label-sm text-label-sm">
           ${overdue ? 'Overdue: ' : ''}${formatDate(task.due_date)}
       </span>
     `;
   }
 
-  const titleHtml = `<h4 class="font-label-lg text-label-lg text-on-surface mb-1 group-hover:text-primary transition-colors ${isCompleted ? 'line-through opacity-60' : ''}">${escapeHtml(task.title)}</h4>`;
+  const titleClass = isCompleted ? 'line-through opacity-60' : '';
   const descHtml = task.description
-    ? `<p class="font-body-md text-body-md text-on-surface-variant mb-2 line-clamp-2 ${isCompleted ? 'opacity-60' : ''}">${escapeHtml(task.description)}</p>`
-    : `<p class="font-body-md text-body-md text-on-surface-variant opacity-0 mb-2">No description</p>`;
+    ? `<p class="font-body-md text-sm text-on-surface-variant line-clamp-1 ${isCompleted ? 'opacity-60' : ''}">${escapeHtml(task.description)}</p>`
+    : '';
 
   card.innerHTML = `
-    ${bgDecoration}
-    <div class="relative z-10 flex flex-col h-full justify-between gap-md">
-        <div>
-            <div class="flex justify-between items-start mb-2">
-                ${titleHtml}
-                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button class="action-btn--edit text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-variant transition-colors" data-id="${task.id}" title="Edit">
-                        <span class="material-symbols-outlined text-[18px]">edit</span>
-                    </button>
-                    <button class="action-btn--delete text-on-surface-variant hover:text-secondary p-1 rounded-full hover:bg-surface-variant transition-colors" data-id="${task.id}" title="Delete">
-                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
-                </div>
-            </div>
-            ${descHtml}
-            ${dueDateHtml}
-        </div>
-        
-        <div class="mt-4 pt-2 border-t border-outline-variant/50 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded border-2 ${isCompleted ? 'bg-green-500 border-green-500' : 'border-outline hover:border-primary cursor-pointer'} flex items-center justify-center relative transition-colors">
-                    <input type="checkbox" class="task-card__checkbox absolute inset-0 opacity-0 cursor-pointer w-full h-full m-0 p-0 z-10" ${isCompleted ? 'checked' : ''} data-id="${task.id}" title="Toggle status">
-                    ${isCompleted ? '<span class="material-symbols-outlined text-white text-[16px] font-bold">check</span>' : ''}
-                </div>
-                <span class="font-label-sm text-label-sm ${isCompleted ? 'text-green-600' : 'text-on-surface-variant'}">${isCompleted ? 'Completed' : 'Pending'}</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="font-label-sm text-label-sm text-on-surface-variant capitalize">${task.priority}</span>
-                <span class="w-3 h-3 rounded-full ${priorityStyle}"></span>
-            </div>
-        </div>
+    <div class="w-10 h-10 rounded-xl ${priorityData.bgClass} flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined ${priorityData.colorClass}" style="font-variation-settings: 'FILL' 1;">${priorityData.icon}</span>
+    </div>
+    
+    <div class="flex-1 min-w-0 flex flex-col justify-center">
+        <p class="font-body-md text-body-md text-on-surface truncate ${titleClass}">${escapeHtml(task.title)}</p>
+        ${descHtml}
+        ${dueDateHtml}
+    </div>
+    
+    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button class="action-btn--edit text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-variant transition-colors" data-id="${task.id}" title="Edit">
+            <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+        <button class="action-btn--delete text-on-surface-variant hover:text-error p-1 rounded-full hover:bg-surface-variant transition-colors" data-id="${task.id}" title="Delete">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+        </button>
+    </div>
+
+    <div class="w-6 h-6 rounded border-2 relative flex items-center justify-center shrink-0 transition-colors ${isCompleted ? 'border-[#22C55E] bg-[#F0FDF4]' : 'border-outline hover:border-primary bg-surface-container'}">
+        <input type="checkbox" class="task-card__checkbox absolute inset-0 opacity-0 cursor-pointer w-full h-full m-0 p-0 z-10" ${isCompleted ? 'checked' : ''} data-id="${task.id}" title="Toggle status">
+        ${isCompleted ? '<span class="material-symbols-outlined text-[#22C55E] text-[16px] font-bold">check</span>' : ''}
     </div>
   `;
 
@@ -159,12 +158,17 @@ function openEditModal(task = null) {
     document.getElementById('edit-due').value = '';
   }
 
-  // Mobile Animation
+  // Show overlay
   mobileOverlayBg.classList.remove('hidden');
-  void mobileOverlayBg.offsetWidth; // force reflow
+  void mobileOverlayBg.offsetWidth;
   mobileOverlayBg.classList.remove('opacity-0');
   
-  modalContent.classList.remove('translate-y-full');
+  // Show modal
+  modalWrapper.style.visibility = 'visible';
+  modalWrapper.classList.remove('opacity-0');
+  modalWrapper.classList.add('opacity-100');
+  modalContentEl.classList.remove('translate-y-full', 'md:translate-y-8', 'md:scale-95');
+  modalContentEl.classList.add('translate-y-0', 'md:translate-y-0', 'md:scale-100');
   
   // Focus logic
   setTimeout(() => {
@@ -181,11 +185,17 @@ function closeEditModal() {
   document.getElementById('edit-priority').value = 'medium';
   clearEditError();
 
-  // Mobile Animation out
+  // Hide modal
+  modalWrapper.classList.remove('opacity-100');
+  modalWrapper.classList.add('opacity-0');
+  modalContentEl.classList.add('translate-y-full', 'md:translate-y-8', 'md:scale-95');
+  modalContentEl.classList.remove('translate-y-0', 'md:translate-y-0', 'md:scale-100');
+  
+  // Hide overlay
   mobileOverlayBg.classList.add('opacity-0');
-  modalContent.classList.add('translate-y-full');
   
   setTimeout(() => {
+    modalWrapper.style.visibility = 'hidden';
     mobileOverlayBg.classList.add('hidden');
   }, 300);
 }

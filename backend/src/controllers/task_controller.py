@@ -24,9 +24,10 @@ def get_single_task(task_id):
 
 def add_task(data):
   """Validates and creates a new task. Raises 400 if title is missing."""
-  title = data.get("title", "").strip()
-  if not title:
+  title_value = data.get("title", "")
+  if not isinstance(title_value, str) or not title_value.strip():
     raise HTTPException(status_code=400, detail="Title is required")
+  title = title_value.strip()
 
   description = data.get("description", "")
   priority = data.get("priority", "medium")
@@ -40,8 +41,10 @@ def add_task(data):
 
 def edit_task(task_id, data):
   """Validates and updates an existing task. Raises 404 if not found, 400 on bad data."""
-  if "title" in data and not data["title"].strip():
-    raise HTTPException(status_code=400, detail="Title cannot be empty")
+  if "title" in data:
+    title_value = data.get("title")
+    if not isinstance(title_value, str) or not title_value.strip():
+      raise HTTPException(status_code=400, detail="Title cannot be empty")
 
   if "priority" in data and data["priority"] not in ("low", "medium", "high"):
     raise HTTPException(status_code=400, detail="Priority must be low, medium, or high")

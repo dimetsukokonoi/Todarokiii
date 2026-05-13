@@ -1,25 +1,172 @@
-/* Custom styles for Task-Flow */
+/* Task-Flow UI polish */
+:root {
+  --ink: #1f1b16;
+  --muted: #5c574f;
+  --surface: #fdfbf7;
+  --surface-2: #f3efe7;
+  --ring: rgba(15, 118, 110, 0.35);
+  --shadow-soft: 0 10px 30px -20px rgba(31, 27, 22, 0.35);
+  --shadow-lift: 0 20px 50px -28px rgba(31, 27, 22, 0.45);
+}
 
-/* We are using Tailwind CSS via CDN now, so most custom CSS is removed. */
+* {
+  box-sizing: border-box;
+}
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Base resets */
 body {
   margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 600px at 10% -10%, rgba(15, 118, 110, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(217, 119, 6, 0.18), transparent 60%),
+    linear-gradient(180deg, #f5f3ef 0%, #f9f6f0 42%, #fdfbf7 100%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animations that are complex for Tailwind classes */
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.app-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.bg-orb {
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  border-radius: 999px;
+  filter: blur(6px);
+  opacity: 0.7;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.orb-1 {
+  top: -220px;
+  left: -180px;
+  background: radial-gradient(circle at 30% 30%, rgba(15, 118, 110, 0.55), transparent 65%);
+}
+
+.orb-2 {
+  top: 120px;
+  right: -220px;
+  background: radial-gradient(circle at 70% 30%, rgba(217, 119, 6, 0.45), transparent 70%);
+}
+
+.app-header,
+.page-grid,
+.bottom-nav {
+  position: relative;
+  z-index: 1;
+}
+
+.app-header {
+  border-radius: 999px;
+  margin: 16px auto 0;
+  max-width: 1200px;
+  box-shadow: 0 12px 40px -28px rgba(31, 27, 22, 0.6);
+  border: 1px solid rgba(212, 205, 191, 0.7);
+}
+
+.bottom-nav {
+  background: rgba(255, 255, 255, 0.82);
+  border-top: 1px solid rgba(212, 205, 191, 0.7);
+  backdrop-filter: blur(14px);
+}
+
+.page-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(31, 27, 22, 0.03) 1px, transparent 0);
+  background-size: 22px 22px;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+.app-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(253, 251, 247, 0.98));
+  box-shadow: var(--shadow-lift);
 }
 
 #task-list > div {
-  animation: slideUp 0.3s ease-out forwards;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  animation: riseIn 0.45s ease both;
+}
+
+#task-list > div:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+}
+
+#task-list > div:focus-within {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: revealIn 0.6s ease forwards;
+}
+
+.reveal-1 { animation-delay: 0.08s; }
+.reveal-2 { animation-delay: 0.16s; }
+.reveal-3 { animation-delay: 0.24s; }
+.reveal-4 { animation-delay: 0.32s; }
+
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1024px) {
+  .app-header {
+    border-radius: 18px;
+    margin: 12px 12px 0;
+  }
+
+  .app-panel {
+    border-radius: 24px 24px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

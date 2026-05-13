@@ -23,31 +23,22 @@ async function loadTasks() {
 
 function updateFilterStyles(activeFilter) {
   const allBtn = document.getElementById('filter-all');
-  const allIcon = document.getElementById('filter-all-icon');
-  const allText = document.getElementById('filter-all-text');
-  
   const pendingBtn = document.getElementById('filter-pending');
-  const pendingIcon = document.getElementById('filter-pending-icon');
-  
   const completedBtn = document.getElementById('filter-completed');
-  const completedIcon = document.getElementById('filter-completed-icon');
 
-  // Reset all
-  allIcon.className = 'w-14 h-14 rounded-full border-2 border-outline bg-surface-container-lowest flex items-center justify-center hover:bg-surface-variant transition-colors';
-  allText.className = 'font-label-sm text-label-sm text-on-surface-variant font-semibold';
-  
-  pendingIcon.className = 'w-14 h-14 rounded-full border-2 border-secondary-container bg-surface-container-lowest flex items-center justify-center hover:bg-secondary-container/10 transition-colors';
-  
-  completedIcon.className = 'w-14 h-14 rounded-full border-2 border-green-500 bg-surface-container-lowest flex items-center justify-center hover:bg-green-500/10 transition-colors';
+  const inactiveClass = 'flex-1 text-on-primary rounded-full h-full font-title-sm text-title-sm hover:bg-surface-tint hover:bg-opacity-20 transition-all flex items-center justify-center';
+  const activeClass = 'flex-1 bg-surface-container-lowest text-primary rounded-full h-full font-title-sm text-title-sm shadow-sm transition-all flex items-center justify-center z-10';
 
-  // Apply active
+  allBtn.className = inactiveClass;
+  pendingBtn.className = inactiveClass;
+  completedBtn.className = inactiveClass;
+
   if (activeFilter === 'all') {
-    allIcon.className = 'w-14 h-14 rounded-full border-2 border-primary bg-primary/10 flex items-center justify-center transition-colors';
-    allText.className = 'font-label-sm text-label-sm text-primary font-semibold';
+    allBtn.className = activeClass;
   } else if (activeFilter === 'pending') {
-    pendingIcon.className = 'w-14 h-14 rounded-full border-2 border-secondary-container bg-secondary-container/10 flex items-center justify-center transition-colors';
+    pendingBtn.className = activeClass;
   } else if (activeFilter === 'completed') {
-    completedIcon.className = 'w-14 h-14 rounded-full border-2 border-green-500 bg-green-500/10 flex items-center justify-center transition-colors';
+    completedBtn.className = activeClass;
   }
 }
 
@@ -134,6 +125,14 @@ function bindModalEvents() {
   const overlayBg = document.getElementById('mobile-overlay-bg');
   if (overlayBg) {
     overlayBg.addEventListener('click', () => window.closeEditModal());
+  }
+
+  // Close modal when clicking the backdrop area (outside the modal content)
+  const modalWrapper = document.getElementById('edit-modal');
+  if (modalWrapper) {
+    modalWrapper.addEventListener('click', (e) => {
+      if (e.target === modalWrapper) window.closeEditModal();
+    });
   }
 
   document.getElementById('edit-task-form').addEventListener('submit', async (e) => {
